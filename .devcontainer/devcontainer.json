@@ -1,0 +1,22 @@
+{
+  "name": "TrueCost Dev",
+  "image": "mcr.microsoft.com/devcontainers/python:3.11",  // or node:20 if using Node.js
+  "features": {
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "20"
+    },
+    "ghcr.io/devcontainers/features/python:1": {
+      "version": "3.11"
+    }
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "esbenp.prettier-vscode",
+        "dbaeumer.vscode-eslint"
+      ]
+    }
+  },
+  "postCreateCommand": "pip install -r server/requirements.txt || true"
+}
