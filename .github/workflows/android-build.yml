@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - main
-  workflow_dispatch:  # Allows manual runs
+  workflow_dispatch:
 
 jobs:
   build:
@@ -25,11 +25,12 @@ jobs:
         uses: android-actions/setup-android@v3
 
       - name: Grant execute permission to Gradle wrapper
-        run: chmod +x ./react_native_app/TrueCostApp/android/gradlew
+        run: chmod +x android/gradlew
+        working-directory: react_native_app/TrueCostApp
 
       - name: Build Debug APK
-        working-directory: ./react_native_app/TrueCostApp/android
         run: ./gradlew assembleDebug
+        working-directory: react_native_app/TrueCostApp/android
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
