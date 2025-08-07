@@ -14,9 +14,20 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: List react_native_app directory (for sanity check)
-        run: ls -la react_native_app/TrueCostApp/android
+      # DEBUG STEPS - add these to check where we are and what files exist
+      - name: Print working directory
+        run: pwd
 
+      - name: List root directory
+        run: ls -la
+
+      - name: List react_native_app directory (relative path)
+        run: ls -la react_native_app/TrueCostApp/android || echo "Folder not found"
+
+      - name: List android directory (absolute path)
+        run: ls -la ${{ github.workspace }}/react_native_app/TrueCostApp/android || echo "Folder not found"
+
+      # Continue with your original build steps once the path is confirmed
       - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
