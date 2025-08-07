@@ -9,25 +9,9 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
-      # DEBUG STEPS - add these to check where we are and what files exist
-      - name: Print working directory
-        run: pwd
-
-      - name: List root directory
-        run: ls -la
-
-      - name: List react_native_app directory (relative path)
-        run: ls -la react_native_app/TrueCostApp/android || echo "Folder not found"
-
-      - name: List android directory (absolute path)
-        run: ls -la ${{ github.workspace }}/react_native_app/TrueCostApp/android || echo "Folder not found"
-
-      # Continue with your original build steps once the path is confirmed
       - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
@@ -38,15 +22,18 @@ jobs:
         uses: android-actions/setup-android@v3
 
       - name: Make gradlew executable
-        run: chmod +x gradlew
-        working-directory: react_native_app/TrueCostApp/android
+        run: |
+          cd react_native_app/TrueCostApp/android
+          chmod +x gradlew
 
       - name: Build Debug APK
-        run: ./gradlew assembleDebug
-        working-directory: react_native_app/TrueCostApp/android
+        run: |
+          cd react_native_app/TrueCostApp/android
+          ./gradlew assembleDebug
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
           name: app-debug-apk
           path: react_native_app/TrueCostApp/android/app/build/outputs/apk/debug/app-debug.apk
+
