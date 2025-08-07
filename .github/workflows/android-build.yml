@@ -9,8 +9,24 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # Recommended for full commit history if needed
+
+      - name: Print current working directory
+        run: pwd
+
+      - name: List contents of repo root (for debugging)
+        run: ls -la
+
+      - name: List contents of react_native_app
+        run: ls -la react_native_app
+
+      - name: List contents of TrueCostApp
+        run: ls -la react_native_app/TrueCostApp
 
       - name: Set up JDK 17
         uses: actions/setup-java@v3
@@ -22,18 +38,15 @@ jobs:
         uses: android-actions/setup-android@v3
 
       - name: Make gradlew executable
-        run: |
-          cd react_native_app/TrueCostApp/android
-          chmod +x gradlew
+        run: chmod +x gradlew
+        working-directory: ${{ github.workspace }}/react_native_app/TrueCostApp/android
 
       - name: Build Debug APK
-        run: |
-          cd react_native_app/TrueCostApp/android
-          ./gradlew assembleDebug
+        run: ./gradlew assembleDebug
+        working-directory: ${{ github.workspace }}/react_native_app/TrueCostApp/android
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
           name: app-debug-apk
           path: react_native_app/TrueCostApp/android/app/build/outputs/apk/debug/app-debug.apk
-
