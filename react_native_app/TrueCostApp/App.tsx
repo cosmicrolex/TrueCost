@@ -1,32 +1,33 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet, Alert } from 'react-native';
 
-// Define the type for the comparison data returned by the backend
+// Type for the comparison data
 type ComparisonData = {
   Amazon: string;
   Flipkart: string;
   Myntra: string;
 };
 
-// Replace '<codespace-name>-8000.app.github.dev' with the actual public URL from Codespaces
+// Get the Codespaces port-forwarded URL (replace with your actual Codespace URL)
 const API_BASE_URL = 'https://supreme-zebra-g4497rj5prpjhvrx7-8000.app.github.dev';
 
 const App = () => {
-  // State for the product input and comparison results
   const [product, setProduct] = useState<string>('');
   const [comparison, setComparison] = useState<ComparisonData | null>(null);
 
-  // Function to fetch comparison data from the backend
   const fetchComparison = async () => {
+    if (!product.trim()) {
+      Alert.alert('Error', 'Please enter a product name');
+      return;
+    }
     try {
-      const response = await fetch(`${API_BASE_URL}/compare?product=${product}`);
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
+      const response = await fetch(`${API_BASE_URL}/compare?product=${encodeURIComponent(product)}`);
+      if (!response.ok) throw new Error('Failed to fetch data');
       const data: ComparisonData = await response.json();
       setComparison(data);
     } catch (error) {
-      console.error('Error fetching comparison:', error);
+      console.error('Fetch error:', error);
+      Alert.alert('Error', 'Could not fetch comparison data. Check the backend.');
     }
   };
 
@@ -35,16 +36,17 @@ const App = () => {
       <Text style={styles.title}>TrueCost</Text>
       <TextInput
         style={styles.input}
-        placeholder="Enter product name"
+        placeholder="Enter product name (e.g., shoes)"
         value={product}
         onChangeText={setProduct}
+        autoCapitalize="none"
       />
       <Button title="Compare Prices" onPress={fetchComparison} />
       {comparison && (
         <View style={styles.results}>
-          <Text>Amazon: {comparison.Amazon}</Text>
-          <Text>Flipkart: {comparison.Flipkart}</Text>
-          <Text>Myntra: {comparison.Myntra}</Text>
+          <Text style={styles.resultText}>Amazon: {comparison.Amazon}</Text>
+          <Text style={styles.resultText}>Flipkart: {comparison.Flipkart}</Text>
+          <Text style={styles.resultText}>Myntra: {comparison.Myntra}</Text>
         </View>
       )}
     </View>
@@ -53,25 +55,36 @@ const App = () => {
 
 const styles = StyleSheet.create({
   container: {
-    padding: 20,
     flex: 1,
-    backgroundColor: '#fff',
+    padding: 20,
+    backgroundColor: '#f5f5f5',
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 20,
     textAlign: 'center',
+    marginBottom: 20,
+    color: '#333',
   },
   input: {
     borderWidth: 1,
     borderColor: '#ccc',
     padding: 10,
-    marginBottom: 10,
     borderRadius: 5,
+    marginBottom: 10,
+    backgroundColor: '#fff',
   },
   results: {
     marginTop: 20,
+    padding: 10,
+    backgroundColor: '#fff',
+    borderRadius: 5,
+    borderWidth: 1,
+    borderColor: '#ddd',
+  },
+  resultText: {
+    marginVertical: 5,
+    color: '#444',
   },
 });
 
